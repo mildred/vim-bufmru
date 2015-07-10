@@ -27,7 +27,8 @@ endfunction
 
 function BufMRUSave()
 	let i = bufnr("%")
-	if buflisted(i)
+	let totaltime = str2float(reltimestr(reltime(s:bufmru_entertime)))
+	if totaltime > 0.25 && buflisted(i)
 		let oldVal = BufMRUTime(i)
 		let s:bufmru_files[i] = s:bufmru_entertime
 		if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
@@ -60,7 +61,7 @@ function! BufMRUList()
 endfunction
 
 function! BufMRUShow()
-	call BufMRU_leave()
+	call BufMRUSave()
 	let bufs = BufMRUList()
 	for buf in bufs
 		let bufn = bufname(str2nr(buf))

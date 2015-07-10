@@ -1,0 +1,81 @@
+*bufmru.txt* Order buffers in Most Recently Used order
+--------------------------------------------------------------------
+                                                                   ~
+                 ____         __ __  __ ____  _   _                ~
+                | __ ) _   _ / _|  \/  |  _ \| | | |               ~
+                |  _ \| | | | |_| |\/| | |_) | | | |               ~
+                | |_) | |_| |  _| |  | |  _ <| |_| |               ~
+                |____/ \__,_|_| |_|  |_|_| \_\\___/                ~
+                                                                   ~
+                                                                   ~
+====================================================================
+CONTENTS                                            *BufMRUContents*
+
+    1. Usage ................ |BufMRUUsage|
+    2. Mappings ............. |BufMRUMappings|
+    3. License .............. |BufMRULicense|
+    4. Commands ............. |BufMRUCommands|
+
+====================================================================
+Section 1: Usage                                       *BufMRUUsage*
+
+This plugin records the last used buffers, and let you list the
+buffers, and navigate between the buffers
+
+====================================================================
+Section 2: Mappings                                 *BufMRUMappings*
+
+The mapping is left to the user to do in the .vimrc. Recommended
+mapping is to use Alt-B for next buffer in list and Alt-Shift-B for
+previous buffer in list.
+
+    map <A-B>  :BufMRUPrev<CR>
+    map <A-b>  :BufMRUNext<CR>
+    map <Esc>B :BufMRUPrev<CR>
+    map <Esc>b :BufMRUNext<CR>
+
+====================================================================
+Section 3: License                                   *BufMRULicense*
+
+Copyright (c) 2015 Mildred Ki'Lya
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation files
+(the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+====================================================================
+Section 4: Commands                                 *BufMRUCommands*
+
+:BufMRU                                                    *:BufMRU*
+
+    List the buffers in MRU order.
+
+
+:BufMRUNext                                            *:BufMRUNext*
+
+    Switch to the next buffer in MRU order.
+
+
+:BufMRUPrev                                            *:BufMRUPrev*
+
+    Switch to the previous buffer in MRU order.
+
+
+--------------------------------------------------------------------
+ vim:tw=78:fo=tcq2:isk=!-~,^*,^\|,^\":ts=8:ft=help:norl:
