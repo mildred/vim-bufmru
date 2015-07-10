@@ -26,7 +26,12 @@ function! BufMRU_enter()
 endfunction
 
 function BufMRUSave()
-	let s:bufmru_files[bufnr("%")] = s:bufmru_entertime
+	let i = bufnr("%")
+	let oldVal = BufMRUTime(i)
+	let s:bufmru_files[i] = s:bufmru_entertime
+	if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
+		silent doautocmd User BufMRUChange
+	endif
 endfunction
 
 function! BufMRU_leave()
@@ -66,8 +71,8 @@ endfunction
 augroup bufmru_buffers
 	autocmd!
 	autocmd BufEnter * call BufMRU_enter()
-	autocmd BufLeave * call BufMRU_leave()
-	autocmd InsertEnter,InsertLeave,TextChanged,CursorMoved,CursorMovedI * call BufMRUSave()
+	"autocmd BufLeave * call BufMRU_leave()
+	autocmd InsertEnter,InsertLeave,TextChanged,CursorMoved,CursorMovedI,CursorHold,CursorHoldI * call BufMRUSave()
 augroup END
 
 command! -nargs=0 BufMRU :call BufMRUShow()
