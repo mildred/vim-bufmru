@@ -25,11 +25,14 @@ function! BufMRU_enter()
 	let s:bufmru_entertime = reltime()
 endfunction
 
+function BufMRUSave()
+	let s:bufmru_files[bufnr("%")] = s:bufmru_entertime
+endfunction
+
 function! BufMRU_leave()
 	let totaltime = reltime(s:bufmru_entertime)
-	let buf = bufnr("%")
 	if totaltime[0] >= 1
-		let s:bufmru_files[buf] = s:bufmru_entertime
+		call BufMRUSave()
 	endif
 endfunction
 
@@ -54,13 +57,18 @@ function! BufMRUShow()
 endfunction
 
 function! BufMRUGo(inc)
+	call BufMRU_leave()
 	let list = BufMRUList()
 	let i = list[(index(list, bufnr("%")) + a:inc) % len(list)]
 	execute "buffer" i
 endfunction
 
-autocmd BufEnter * call BufMRU_enter()
-autocmd BufLeave * call BufMRU_leave()
+augroup bufmru_buffers
+	autocmd!
+	autocmd BufEnter * call BufMRU_enter()
+	autocmd BufLeave * call BufMRU_leave()
+	autocmd InsertEnter,InsertLeave,TextChanged,CursorMoved,CursorMovedI * call BufMRUSave()
+augroup END
 
 command! -nargs=0 BufMRU :call BufMRUShow()
 command! -nargs=0 BufMRUNext :call BufMRUGo(1)
