@@ -22,3 +22,6 @@ beginning of the list before you can continue to the next element of the list.
 You can use this plugin with my fork of
 [vim-airline](https://github.com/mildred/vim-airline/)
 
+Note: I just learnt to use vim and created this plugin because I didn't find
+anything suitable for me. This is my first vim plugin ever and can probably be
+improved.
