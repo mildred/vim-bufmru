@@ -27,10 +27,12 @@ endfunction
 
 function BufMRUSave()
 	let i = bufnr("%")
-	let oldVal = BufMRUTime(i)
-	let s:bufmru_files[i] = s:bufmru_entertime
-	if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
-		silent doautocmd User BufMRUChange
+	if buflisted(i)
+		let oldVal = BufMRUTime(i)
+		let s:bufmru_files[i] = s:bufmru_entertime
+		if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
+			silent doautocmd User BufMRUChange
+		endif
 	endif
 endfunction
 
@@ -46,9 +48,15 @@ function! BufMRUTime(bufn)
 endfunction
 
 function! BufMRUList()
-	let bufs = range(1, bufnr("$")) "keys(s:bufmru_files)
+	let bufs = range(1, bufnr("$"))
+	let res = []
 	call sort(bufs, "BufMRU_sort")
-	return bufs
+	for nr in bufs
+		if buflisted(nr)
+			call add(res, nr)
+		endif
+	endfor
+	return res
 endfunction
 
 function! BufMRUShow()
@@ -64,7 +72,8 @@ endfunction
 function! BufMRUGo(inc)
 	call BufMRU_leave()
 	let list = BufMRUList()
-	let i = list[(index(list, bufnr("%")) + a:inc) % len(list)]
+	let idx = index(list, bufnr("%"))
+	let i = list[((idx < 0 ? 0 : idx) + a:inc) % len(list)]
 	execute "buffer" i
 endfunction
 
@@ -72,7 +81,8 @@ augroup bufmru_buffers
 	autocmd!
 	autocmd BufEnter * call BufMRU_enter()
 	"autocmd BufLeave * call BufMRU_leave()
-	autocmd InsertEnter,InsertLeave,TextChanged,CursorMoved,CursorMovedI,CursorHold,CursorHoldI * call BufMRUSave()
+	autocmd InsertEnter,InsertLeave,TextChanged,CursorMoved,CursorMovedI * call BufMRUSave()
+	autocmd CursorHold,CursorHoldI * call BufMRUSave()
 augroup END
 
 command! -nargs=0 BufMRU :call BufMRUShow()
