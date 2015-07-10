@@ -55,7 +55,7 @@ endfunction
 
 function! BufMRUGo(inc)
 	let list = BufMRUList()
-	let i = list[(index(list, bufnr("%")) + a:inc - 1) % bufnr("$") + 1]
+	let i = list[(index(list, bufnr("%")) + a:inc) % len(list)]
 	execute "buffer" i
 endfunction
 
