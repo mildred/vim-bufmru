@@ -12,82 +12,9 @@ set cpo&vim
 " 1}}}
 
 
-let s:bufmru_files = {}
-let s:bufmru_starttime = reltime()
-let s:bufmru_entertime = s:bufmru_starttime
+call bufmru#init()
 
-function! BufMRU_sort(b1, b2)
-	let t1 = str2float(reltimestr(BufMRUTime(a:b1)))
-	let t2 = str2float(reltimestr(BufMRUTime(a:b2)))
-	return t1 == t2 ? 0 : t1 > t2 ? -1 : 1
-endfunction
-
-function! BufMRU_enter()
-	let s:bufmru_entertime = reltime()
-endfunction
-
-function BufMRUSave()
-	let i = bufnr("%")
-	let totaltime = str2float(reltimestr(reltime(s:bufmru_entertime)))
-	if totaltime > 0.25 && buflisted(i)
-		let oldVal = BufMRUTime(i)
-		let s:bufmru_files[i] = s:bufmru_entertime
-		if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
-			silent doautocmd User BufMRUChange
-		endif
-	endif
-endfunction
-
-function! BufMRU_leave()
-	let totaltime = str2float(reltimestr(reltime(s:bufmru_entertime)))
-	if totaltime >= 1.0
-		call BufMRUSave()
-	endif
-endfunction
-
-function! BufMRUTime(bufn)
-	return has_key(s:bufmru_files, a:bufn) ? s:bufmru_files[a:bufn] : s:bufmru_starttime
-endfunction
-
-function! BufMRUList()
-	let bufs = range(1, bufnr("$"))
-	let res = []
-	call sort(bufs, "BufMRU_sort")
-	for nr in bufs
-		if buflisted(nr)
-			call add(res, nr)
-		endif
-	endfor
-	return res
-endfunction
-
-function! BufMRUShow()
-	call BufMRUSave()
-	let bufs = BufMRUList()
-	for buf in bufs
-		let bufn = bufname(str2nr(buf))
-		let buft = reltimestr(reltime(BufMRUTime(buf)))
-		echom buf " | " buft "s | " bufn
-	endfor
-endfunction
-
-function! BufMRUGo(inc)
-	call BufMRU_leave()
-	let list = BufMRUList()
-	let idx = index(list, bufnr("%"))
-	let i = list[((idx < 0 ? 0 : idx) + a:inc) % len(list)]
-	execute "buffer" i
-endfunction
-
-augroup bufmru_buffers
-	autocmd!
-	autocmd BufEnter * call BufMRU_enter()
-	"autocmd BufLeave * call BufMRU_leave()
-	autocmd InsertEnter,InsertLeave,TextChanged,CursorMoved,CursorMovedI * call BufMRUSave()
-	autocmd CursorHold,CursorHoldI * call BufMRUSave()
-augroup END
-
-command! -nargs=0 BufMRU :call BufMRUShow()
-command! -nargs=0 BufMRUNext :call BufMRUGo(1)
-command! -nargs=0 BufMRUPrev :call BufMRUGo(-1)
+command! -nargs=0 BufMRU :call bufmru#show()
+command! -nargs=0 BufMRUNext :call bufmru#go(1)
+command! -nargs=0 BufMRUPrev :call bufmru#go(-1)
 
