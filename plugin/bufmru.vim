@@ -13,7 +13,8 @@ set cpo&vim
 
 
 let s:bufmru_files = {}
-let s:bufmru_entertime = reltime()
+let s:bufmru_starttime = reltime()
+let s:bufmru_entertime = s:bufmru_starttime
 
 function! BufMRU_sort(b1, b2)
 	let t1 = str2float(reltimestr(BufMRUTime(a:b1)))
@@ -38,14 +39,14 @@ function BufMRUSave()
 endfunction
 
 function! BufMRU_leave()
-	let totaltime = reltime(s:bufmru_entertime)
-	if totaltime[0] >= 1
+	let totaltime = str2float(reltimestr(reltime(s:bufmru_entertime)))
+	if totaltime >= 1.0
 		call BufMRUSave()
 	endif
 endfunction
 
 function! BufMRUTime(bufn)
-	return has_key(s:bufmru_files, a:bufn) ? s:bufmru_files[a:bufn] : [0,0]
+	return has_key(s:bufmru_files, a:bufn) ? s:bufmru_files[a:bufn] : s:bufmru_starttime
 endfunction
 
 function! BufMRUList()

@@ -15,6 +15,7 @@ CONTENTS                                            *BufMRUContents*
     2. Mappings ............. |BufMRUMappings|
     3. License .............. |BufMRULicense|
     4. Commands ............. |BufMRUCommands|
+    5. Functions ............ |BufMRUFunctions|
 
 ====================================================================
 Section 1: Usage                                       *BufMRUUsage*
@@ -29,10 +30,10 @@ The mapping is left to the user to do in the .vimrc. Recommended
 mapping is to use Alt-B for next buffer in list and Alt-Shift-B for
 previous buffer in list.
 
-    map <A-B>  :BufMRUPrev<CR>
-    map <A-b>  :BufMRUNext<CR>
-    map <Esc>B :BufMRUPrev<CR>
-    map <Esc>b :BufMRUNext<CR>
+	map <A-B>  :BufMRUPrev<CR>
+	map <A-b>  :BufMRUNext<CR>
+	map <Esc>B :BufMRUPrev<CR>
+	map <Esc>b :BufMRUNext<CR>
 
 ====================================================================
 Section 3: License                                   *BufMRULicense*
@@ -62,20 +63,33 @@ SOFTWARE.
 ====================================================================
 Section 4: Commands                                 *BufMRUCommands*
 
-:BufMRU                                                    *:BufMRU*
+  							   *:BufMRU*
+:BufMRU
+	List the buffers in MRU order.
 
-    List the buffers in MRU order.
+     						       *:BufMRUNext*
+:BufMRUNext
+	Switch to the next buffer in MRU order.
+
+     						       *:BufMRUPrev*
+:BufMRUPrev
+	Switch to the previous buffer in MRU order.
 
 
-:BufMRUNext                                            *:BufMRUNext*
+====================================================================
+Section 5: Functions                               *BufMRUFunctions*
 
-    Switch to the next buffer in MRU order.
+                     				      *BufMRUList()*
+:BufMRUList()
+	Return the list of buffers tracked by BufMRU sorted in Most
+	Recently Used order. Each buffer is represented by its
+	identifier.
 
-
-:BufMRUPrev                                            *:BufMRUPrev*
-
-    Switch to the previous buffer in MRU order.
+     						      *BufMRUTime()*
+:BufMRUTime(n)
+	Return the time the buffer n was last used in reltime()
+	format.
 
 
 --------------------------------------------------------------------
- vim:tw=78:fo=tcq2:isk=!-~,^*,^\|,^\":ts=8:ft=help:norl:
+ vim:fo=tcq2:isk=!-~,^*,^\|,^\":ts=8:ft=help:norl:tw=68
