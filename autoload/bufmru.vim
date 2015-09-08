@@ -85,7 +85,7 @@ function! bufmru#init()
 		autocmd InsertLeave * call bufmru#save()
 		autocmd TextChanged * call bufmru#save()
 		autocmd TextChangedI * call bufmru#save()
- 		autocmd CursorHold,CursorHoldI * call bufmru#save()
+ 		"autocmd CursorHold,CursorHoldI * call bufmru#save()
 		autocmd CursorMoved * call bufmru#save()
 		autocmd CursorMovedI * call bufmru#save()
 	augroup END
