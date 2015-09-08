@@ -18,10 +18,11 @@ function bufmru#save()
 			silent doautocmd User BufMRUChange
 			call airline#extensions#tabline#buflist#invalidate()
 			" Change currect buffer to force updating the airline buffer list
-			execute "buffer" 1
-			execute "buffer" 2
-			execute "buffer" i
-
+			if bufnr("$") > 1
+				execute "buffer" 1
+				execute "buffer" 2
+				execute "buffer" i
+			endif
 		endif
 	endif
 	"unmap <CR>
