@@ -16,8 +16,15 @@ function bufmru#save()
 		let s:bufmru_files[i] = s:bufmru_entertime
 		if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
 			silent doautocmd User BufMRUChange
+			call airline#extensions#tabline#buflist#invalidate()
+			" Change currect buffer to force updating the airline buffer list
+			execute "buffer" 1
+			execute "buffer" 2
+			execute "buffer" i
+
 		endif
 	endif
+	"unmap <CR>
 endfunction
 
 function! bufmru#leave()
@@ -54,11 +61,12 @@ function! bufmru#show()
 endfunction
 
 function! bufmru#go(inc)
-	call bufmru#leave()
+	"call bufmru#leave()
 	let list = BufMRUList()
 	let idx = index(list, bufnr("%"))
 	let i = list[((idx < 0 ? 0 : idx) + a:inc) % len(list)]
 	execute "buffer" i
+	"noremap <CR> :BufMRUCommit<CR><CR>
 endfunction
 
 
@@ -71,8 +79,14 @@ function! bufmru#init()
 		autocmd!
 		autocmd BufEnter * call bufmru#enter()
 		"autocmd BufLeave * call bufmru#leave()
-		autocmd InsertEnter,InsertLeave,TextChanged,CursorMoved,CursorMovedI * call bufmru#save()
-		autocmd CursorHold,CursorHoldI * call bufmru#save()
+		"autocmd InsertEnter,InsertLeave * call bufmru#save()
+		autocmd InsertEnter * call bufmru#save()
+		autocmd InsertLeave * call bufmru#save()
+		autocmd TextChanged * call bufmru#save()
+		autocmd TextChangedI * call bufmru#save()
+ 		autocmd CursorHold,CursorHoldI * call bufmru#save()
+		autocmd CursorMoved * call bufmru#save()
+		autocmd CursorMovedI * call bufmru#save()
 	augroup END
 endfunction
 
