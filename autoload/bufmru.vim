@@ -19,9 +19,10 @@ function bufmru#save()
 			call airline#extensions#tabline#buflist#invalidate()
 			" Change currect buffer to force updating the airline buffer list
 			if bufnr("$") > 1
-				execute "buffer" 1
-				execute "buffer" 2
-				execute "buffer" i
+				" Toggle showing the tabline off and on to refresh it
+				let stl=&showtabline
+				set showtabline=0
+				let &showtabline=stl
 			endif
 		endif
 	endif
