@@ -6,12 +6,17 @@ endfunction
 
 function! bufmru#enter()
 	let s:bufmru_entertime = reltime()
+	if ! s:going
+		call bufmru#save()
+	endif
+	let s:going = 0
 endfunction
 
-function bufmru#save()
+function! bufmru#save()
 	let i = bufnr("%")
+	let s:going = 0
 	let totaltime = str2float(reltimestr(reltime(s:bufmru_entertime)))
-	if totaltime > 0.25 && buflisted(i)
+	if totaltime > s:no_reorder_buffers_seconds && buflisted(i)
 		let oldVal = BufMRUTime(i)
 		let s:bufmru_files[i] = s:bufmru_entertime
 		if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
@@ -67,6 +72,7 @@ function! bufmru#go(inc)
 	let list = BufMRUList()
 	let idx = index(list, bufnr("%"))
 	let i = list[((idx < 0 ? 0 : idx) + a:inc) % len(list)]
+	let s:going = 1
 	execute "buffer" i
 	"noremap <CR> :BufMRUCommit<CR><CR>
 endfunction
@@ -74,8 +80,10 @@ endfunction
 
 function! bufmru#init()
 	let s:bufmru_files = {}
+	let s:no_reorder_buffers_seconds = -1
 	let s:bufmru_starttime = reltime()
 	let s:bufmru_entertime = s:bufmru_starttime
+	let s:going = 0
 
 	augroup bufmru_buffers
 		autocmd!
