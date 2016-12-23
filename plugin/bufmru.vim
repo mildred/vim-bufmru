@@ -17,5 +17,5 @@ call bufmru#init()
 command! -nargs=0 BufMRU :call bufmru#show()
 command! -nargs=0 BufMRUNext :call bufmru#go(1)
 command! -nargs=0 BufMRUPrev :call bufmru#go(-1)
-command! -nargs=0 BufMRUCommit :call bufmru#save()
+command! -nargs=0 BufMRUCommit :call bufmru#save("BufMRUCommit")
 

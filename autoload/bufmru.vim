@@ -7,16 +7,17 @@ endfunction
 function! bufmru#enter()
 	let s:bufmru_entertime = reltime()
 	if ! s:going
-		call bufmru#save()
+		call bufmru#save("enter()")
 	endif
 	let s:going = 0
+	call bufmru#autocmd()
 endfunction
 
-function! bufmru#save()
+function! bufmru#save(reason)
+	"echo "save(" a:reason ")"
 	let i = bufnr("%")
 	let s:going = 0
-	let totaltime = str2float(reltimestr(reltime(s:bufmru_entertime)))
-	if totaltime > s:no_reorder_buffers_seconds && buflisted(i)
+	if buflisted(i)
 		let oldVal = BufMRUTime(i)
 		let s:bufmru_files[i] = s:bufmru_entertime
 		if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
@@ -34,10 +35,17 @@ function! bufmru#save()
 	"unmap <CR>
 endfunction
 
+function! bufmru#save_change(reason, timeout)
+	let totaltime = str2float(reltimestr(reltime(s:bufmru_entertime)))
+	if totaltime > a:timeout
+		call bufmru#save(a:reason)
+	endif
+endfunction
+
 function! bufmru#leave()
 	let totaltime = str2float(reltimestr(reltime(s:bufmru_entertime)))
 	if totaltime >= 1.0
-		call bufmru#save()
+		call bufmru#save("leave()")
 	endif
 endfunction
 
@@ -58,7 +66,7 @@ function! BufMRUList()
 endfunction
 
 function! bufmru#show()
-	call bufmru#save()
+	call bufmru#save("show()")
 	let bufs = BufMRUList()
 	for buf in bufs
 		let bufn = bufname(str2nr(buf))
@@ -73,6 +81,7 @@ function! bufmru#go(inc)
 	let idx = index(list, bufnr("%"))
 	let i = list[((idx < 0 ? 0 : idx) + a:inc) % len(list)]
 	let s:going = 1
+	call bufmru#noautocmd()
 	execute "buffer" i
 	"noremap <CR> :BufMRUCommit<CR><CR>
 endfunction
@@ -80,23 +89,33 @@ endfunction
 
 function! bufmru#init()
 	let s:bufmru_files = {}
-	let s:no_reorder_buffers_seconds = -1
 	let s:bufmru_starttime = reltime()
 	let s:bufmru_entertime = s:bufmru_starttime
 	let s:going = 0
 
+	call bufmru#autocmd()
+endfunction
+
+function bufmru#noautocmd()
+	augroup bufmru_buffers
+		autocmd!
+		autocmd BufEnter * call bufmru#enter()
+	augroup END
+endfunction
+
+function bufmru#autocmd()
 	augroup bufmru_buffers
 		autocmd!
 		autocmd BufEnter * call bufmru#enter()
 		"autocmd BufLeave * call bufmru#leave()
-		"autocmd InsertEnter,InsertLeave * call bufmru#save()
-		autocmd InsertEnter * call bufmru#save()
-		autocmd InsertLeave * call bufmru#save()
-		autocmd TextChanged * call bufmru#save()
-		autocmd TextChangedI * call bufmru#save()
- 		"autocmd CursorHold,CursorHoldI * call bufmru#save()
-		autocmd CursorMoved * call bufmru#save()
-		autocmd CursorMovedI * call bufmru#save()
+		"autocmd InsertEnter,InsertLeave * call bufmru#save("InsertEnter,InsertLeave")
+		autocmd InsertEnter * call bufmru#save("InsertEnter")
+		autocmd InsertLeave * call bufmru#save("InsertLeave")
+		autocmd TextChanged * call bufmru#save("TextChanged")
+		autocmd TextChangedI * call bufmru#save("TextChangedI")
+ 		"autocmd CursorHold,CursorHoldI * call bufmru#save("CursorHold,CursorHoldI")
+		autocmd CursorMoved * call bufmru#save_change("CursorMoved", 0.1)
+		autocmd CursorMovedI * call bufmru#save_change("CursorMovedI", 0.1)
 	augroup END
 endfunction
 
