@@ -25,6 +25,9 @@ function! bufmru#save(reason)
 			if get(g:, 'airline#extensions#tabline#enabled', 0)
 				call airline#extensions#tabline#buflist#invalidate()
 			endif
+			if !empty(get(g:, 'lightline', {}))
+				call lightline#update()
+			end
 			" Change currect buffer to force updating the airline buffer list
 			if bufnr("$") > 1
 				" Toggle showing the tabline off and on to refresh it
@@ -85,6 +88,7 @@ function! bufmru#go(inc)
 	let s:going = 1
 	call bufmru#noautocmd()
 	execute "buffer" i
+	"call bufmru#save("go")
 	"noremap <CR> :BufMRUCommit<CR><CR>
 endfunction
 
