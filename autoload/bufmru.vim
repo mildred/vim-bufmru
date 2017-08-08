@@ -22,7 +22,9 @@ function! bufmru#save(reason)
 		let s:bufmru_files[i] = s:bufmru_entertime
 		if reltimestr(oldVal) != reltimestr(s:bufmru_entertime)
 			silent doautocmd User BufMRUChange
-			call airline#extensions#tabline#buflist#invalidate()
+			if get(g:, 'airline#extensions#tabline#enabled', 0)
+				call airline#extensions#tabline#buflist#invalidate()
+			endif
 			" Change currect buffer to force updating the airline buffer list
 			if bufnr("$") > 1
 				" Toggle showing the tabline off and on to refresh it
