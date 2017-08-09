@@ -101,6 +101,10 @@ function bufmru#lightline#firstbuffer()
   endif
 endfunction
 
+function bufmru#lightline#close()
+  return '%0@bufmru#lightline#bufclose@ x %X'
+endfunction
+
 function bufmru#lightline#buffers()
   let res = []
   let bufs = BufMRUList()
@@ -114,10 +118,16 @@ function bufmru#lightline#buffers()
     let first = 0
   endfor
   "return join(res, ' '.g:lightline.subseparator.left.' ')
-  return join(res, ' ')
+  return join(res, '  ').' '
 endfunction
 
 function bufmru#lightline#bufgo(num, numclicks, mousebtn, modifiers)
   execute "buffer" a:num
+endfunction
+
+function bufmru#lightline#bufclose(num, numclicks, mousebtn, modifiers)
+  let nr = bufnr('%')
+  call bufmru#go(1)
+  execute "bd" nr
 endfunction
 
