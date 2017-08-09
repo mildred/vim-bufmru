@@ -15,6 +15,7 @@ endfunction
 
 function! bufmru#save(reason)
 	"echo "save(" a:reason ")"
+	let g:bufmru_reason = a:reason
 	let i = bufnr("%")
 	let s:going = 0
 	if buflisted(i)
@@ -120,7 +121,7 @@ function bufmru#autocmd()
 		autocmd TextChanged * call bufmru#save("TextChanged")
 		autocmd TextChangedI * call bufmru#save("TextChangedI")
  		"autocmd CursorHold,CursorHoldI * call bufmru#save("CursorHold,CursorHoldI")
-		autocmd CursorMoved * call bufmru#save_change("CursorMoved", 0.1)
+		"autocmd CursorMoved * call bufmru#save_change("CursorMoved", 0.1)
 		autocmd CursorMovedI * call bufmru#save_change("CursorMovedI", 0.1)
 	augroup END
 endfunction
