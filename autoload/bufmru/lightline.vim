@@ -70,11 +70,11 @@ function bufmru#lightline#buffer_tag(buf, bufs, active)
   "endif
   let text = bufmru#lightline#nr2superscript(a:buf) . name
   let markup = '%' . a:buf . '@bufmru#lightline#bufgo@' . text . '%T'
-  if a:active
-    let markup = '%#' . g:bufmru_lightline_highlight_active . '#' . markup . '%#' . g:bufmru_lightline_highlight . '#'
-  else
-    let markup = '%#' . g:bufmru_lightline_highlight . '#' . markup
-  endif
+  "if a:active
+  "  let markup = '%#' . g:bufmru_lightline_highlight_active . '#' . markup . '%#' . g:bufmru_lightline_highlight . '#'
+  "else
+  "  let markup = '%#' . g:bufmru_lightline_highlight . '#' . markup
+  "endif
   return markup
 endfunction
 
@@ -106,19 +106,26 @@ function bufmru#lightline#close()
 endfunction
 
 function bufmru#lightline#buffers()
-  let res = []
+  let res = [[], [], []]
   let bufs = BufMRUList()
   let first = 1
   let active = bufnr('%')
+  let i = 0
   for buf in bufs
     "if first && buf == bufnr('%')
     "  continue
     "endif
-    let res += [ bufmru#lightline#buffer_tag(buf, bufs, buf == active) ]
+    if buf == active && i < 2
+      let i = 1
+    elseif buf != active && i == 1
+      let i = 2
+    endif
+    let res[i] += [ ' '.bufmru#lightline#buffer_tag(buf, bufs, buf == active).' ' ]
     let first = 0
   endfor
   "return join(res, ' '.g:lightline.subseparator.left.' ')
-  return join(res, '  ').' '
+  return res
+  return [join(res[0], '  ').' ', ' '.join(res[1], '  ').' ', ' '.join(res[2], '  ')]
 endfunction
 
 function bufmru#lightline#bufgo(num, numclicks, mousebtn, modifiers)
