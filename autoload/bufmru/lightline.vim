@@ -129,7 +129,15 @@ function bufmru#lightline#buffers()
 endfunction
 
 function bufmru#lightline#bufgo(num, numclicks, mousebtn, modifiers)
-  execute "buffer" a:num
+  let active = bufnr('%')
+  if a:mousebtn == 'm'
+    if active == a:num
+      call bufmru#go(1)
+    end
+    execute "bd" a:num
+  else
+    execute "buffer" a:num
+  end
 endfunction
 
 function bufmru#lightline#bufclose(num, numclicks, mousebtn, modifiers)
