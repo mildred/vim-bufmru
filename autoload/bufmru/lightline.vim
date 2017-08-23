@@ -75,7 +75,7 @@ function bufmru#lightline#buffer_tag(buf, bufs, active)
   "else
   "  let markup = '%#' . g:bufmru_lightline_highlight . '#' . markup
   "endif
-  return markup
+  return [text, markup]
 endfunction
 
 function bufmru#lightline#nr2superscript(nr)
@@ -94,10 +94,11 @@ function bufmru#lightline#firstbuffer()
   let bufs = BufMRUList()
   let buf = bufnr('%')
   if bufs[0] == buf
-    return bufmru#lightline#buffer_tag(buf, bufs, 1)
-    return ''
+    let [t, m] = bufmru#lightline#buffer_tag(buf, bufs, 1)
+    return m
   else
-    return bufmru#lightline#buffer_tag(buf, bufs, 1)
+    let [t, m] = bufmru#lightline#buffer_tag(buf, bufs, 1)
+    return m
   endif
 endfunction
 
@@ -107,6 +108,7 @@ endfunction
 
 function bufmru#lightline#buffers()
   let res = [[], [], []]
+  let lens = [[], [], []]
   let bufs = BufMRUList()
   let first = 1
   let active = bufnr('%')
@@ -120,11 +122,57 @@ function bufmru#lightline#buffers()
     elseif buf != active && i == 1
       let i = 2
     endif
-    let res[i] += [ ' '.bufmru#lightline#buffer_tag(buf, bufs, buf == active).' ' ]
+    let [t, m] = bufmru#lightline#buffer_tag(buf, bufs, buf == active)
+    let lens[i] += [ len(t)+2 ]
+    let res[i] += [ ' '.m.' ' ]
     let first = 0
   endfor
+
+  let ellipsis = '…'
+  let seplen = 1
+  let res2 = [[], res[1], []]
+  let maxw = winwidth(0)
+  let curw = seplen
+  for w in lens[1]
+    let curw += w + seplen
+  endfor
+  let res200 = []
+  let firstellipsis = 0
+  if len(res[0]) > 0
+    if curw+lens[0][0]+seplen+4 < maxw
+      let res200 += [ res[0][0] ]
+      let curw += lens[0][0] + seplen
+    else
+      let res200 += [ ellipsis ]
+      let curw += 1 + seplen
+      let firstellipsis = 1
+    endif
+  endif
+  let i = len(lens[0])-1
+  while i >= 1 && curw+lens[0][i]+seplen+4 < maxw
+    let curw += lens[0][i] + seplen
+    let res2[0] = [ res[0][i] ] + res2[0]
+    let i = i - 1
+  endwhile
+  if i > 1 && !firstellipsis
+    let curw += 1 + seplen
+    let res2[0] = [ ellipsis ] + res2[0]
+  endif
+  let res2[0] = res200 + res2[0]
+  let i = 0
+  let lenres2 = len(lens[2])
+  while i < lenres2 && curw+lens[2][i]+seplen+2 < maxw
+    let curw += lens[2][i] + seplen
+    let res2[2] += [ res[2][i] ]
+    let i = i + 1
+  endwhile
+  if i < lenres2
+    let res2[2] += [ ellipsis ]
+    let curw += 1 + seplen
+  endif
+
   "return join(res, ' '.g:lightline.subseparator.left.' ')
-  return res
+  return res2
   return [join(res[0], '  ').' ', ' '.join(res[1], '  ').' ', ' '.join(res[2], '  ')]
 endfunction
 
