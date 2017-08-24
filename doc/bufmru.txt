@@ -16,6 +16,7 @@ CONTENTS                                            *BufMRUContents*
     3. License .............. |BufMRULicense|
     4. Commands ............. |BufMRUCommands|
     5. Functions ............ |BufMRUFunctions|
+    6. Lightline component .. |BufMRULightline|
 
 ====================================================================
 Section 1: Usage                                       *BufMRUUsage*
@@ -89,6 +90,66 @@ Section 5: Functions                               *BufMRUFunctions*
 :BufMRUTime(n)
 	Return the time the buffer n was last used in reltime()
 	format.
+
+
+====================================================================
+Section 6: Lightline component                     *BufMRULightline*
+
+A ligneline component can be installed by adding it to the
+|g:lightline| global variable. A recommended configuration is:
+
+                                        *bufmru#lightline#buffers()*
+                                          *bufmru#lightline#close()*
+	let g:lightline = {
+	\ 'tabline': {
+	\   'left': [ [ 'mrubuffers' ] ],
+	\   'right': [ [ 'bufferclose' ] ]
+	\ },
+	\ 'component_expand': {
+	\   'mrubuffers': 'bufmru#lightline#buffers',
+	\   'bufferclose': 'bufmru#lightline#close',
+	\ },
+	\ 'component_type': {
+	\   'buffers':       'tabsel',
+	\   'mrubuffers':    'tabsel',
+	\ },
+	\ 'component_raw': {
+	\   'mrubuffers':     1,
+	\   'bufferclose':    1,
+	\ },
+	\ 'enable': {
+	\   'statusline': 1,
+	\   'tabline': 1
+	\ }
+	\ ...
+	\ }
+
+In order to have correct ellipsis working, you can configure the
+number of characters that the component should reserve on the
+tabline. The component will then take the window width minus this
+reserve. You can count the space needed by other components on your
+tabline and set the reserve size accordingly.
+
+                                         *g:bufmru_lightline_reseve*
+	g:bufmru_lightline_reseve = 5
+
+You can also configure the ellipsis format:
+
+                                       *g:bufmru_lightline_ellipsis*
+	g:bufmru_lightline_ellipsis = '…'
+
+In case the character is a unicode character that takes less columns
+than the number of unicode bytes, you might want to specify its size
+manually:
+
+                                   *g:bufmru_lightline_ellipsis_len*
+	g:bufmru_lightline_ellipsis_len = 1
+
+You can also tell the separator length. Set this to 0 if you have no
+separators for example:
+
+                                        *g:bufmru_lightline_sep_len*
+	g:bufmru_lightline_sep_len = 1
 
 
 --------------------------------------------------------------------

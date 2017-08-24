@@ -106,6 +106,31 @@ function bufmru#lightline#close()
   return '%0@bufmru#lightline#bufclose@ x %X'
 endfunction
 
+function bufmru#lightline#initvars()
+  let el = '…'
+  let ellen = -1
+  let seplen = 1
+  let reserve = 0
+  if exists('g:bufmru_lightline_ellipsis')
+    let el = g:bufmru_lightline_ellipsis
+  else
+    let el = '…'
+    let ellen = 1
+  endif
+  if exists('g:bufmru_lightline_ellipsis_len')
+    let ellen = g:bufmru_lightline_ellipsis_len
+  elseif ellen < 0
+    let ellen = strlen(el)
+  endif
+  if exists('g:bufmru_lightline_sep_len')
+    let seplen = g:bufmru_lightline_sep_len
+  endif
+  if exists('g:bufmru_lightline_reserve')
+    let reseve = g:bufmru_lightline_reserve
+  endif
+  return [ el, ellen, seplen, reserve ]
+endfunction
+
 function bufmru#lightline#buffers()
   let res = [[], [], []]
   let lens = [[], [], []]
@@ -128,10 +153,12 @@ function bufmru#lightline#buffers()
     let first = 0
   endfor
 
-  let ellipsis = '…'
+  let [ ellipsis, ellen, seplen, reserve ] = bufmru#lightline#initvars()
   let seplen = 1
+  let ellen1 = ellen + seplen
+  let ellen2 = 2 * ellen1
   let res2 = [[], res[1], []]
-  let maxw = winwidth(0)
+  let maxw = winwidth(0) - reserve
   let curw = seplen
   for w in lens[1]
     let curw += w + seplen
@@ -139,7 +166,7 @@ function bufmru#lightline#buffers()
   let res200 = []
   let firstellipsis = 0
   if len(res[0]) > 0
-    if curw+lens[0][0]+seplen+4 < maxw
+    if curw+lens[0][0]+seplen+ellen2 < maxw
       let res200 += [ res[0][0] ]
       let curw += lens[0][0] + seplen
     else
@@ -149,7 +176,7 @@ function bufmru#lightline#buffers()
     endif
   endif
   let i = len(lens[0])-1
-  while i >= 1 && curw+lens[0][i]+seplen+4 < maxw
+  while i >= 1 && curw+lens[0][i]+seplen+ellen2 < maxw
     let curw += lens[0][i] + seplen
     let res2[0] = [ res[0][i] ] + res2[0]
     let i = i - 1
@@ -161,7 +188,7 @@ function bufmru#lightline#buffers()
   let res2[0] = res200 + res2[0]
   let i = 0
   let lenres2 = len(lens[2])
-  while i < lenres2 && curw+lens[2][i]+seplen+2 < maxw
+  while i < lenres2 && curw+lens[2][i]+seplen+ellen1 < maxw
     let curw += lens[2][i] + seplen
     let res2[2] += [ res[2][i] ]
     let i = i + 1
@@ -171,9 +198,7 @@ function bufmru#lightline#buffers()
     let curw += 1 + seplen
   endif
 
-  "return join(res, ' '.g:lightline.subseparator.left.' ')
   return res2
-  return [join(res[0], '  ').' ', ' '.join(res[1], '  ').' ', ' '.join(res[2], '  ')]
 endfunction
 
 function bufmru#lightline#bufgo(num, numclicks, mousebtn, modifiers)
