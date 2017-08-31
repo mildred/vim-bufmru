@@ -219,3 +219,21 @@ function bufmru#lightline#bufclose(num, numclicks, mousebtn, modifiers)
   execute "bd" nr
 endfunction
 
+function bufmru#lightline#tabnum()
+  if tabpagenr('$') == 1
+    return '' " no tabs
+  endif
+  let nr = tabpagenr()
+  return '%0@bufmru#lightline#tabnum_click@ tab: '.nr.' %X'
+endfunction
+
+function bufmru#lightline#tabnum_click(num, numclicks, mousebtn, modifiers)
+  if a:mousebtn == 'r'
+    tabprevious
+  elseif a:mousebtn == 'm'
+    tabclose
+  elseif a:mousebtn == 'l'
+    tabnext
+  end
+endfunction
+

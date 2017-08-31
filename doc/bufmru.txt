@@ -103,11 +103,12 @@ A ligneline component can be installed by adding it to the
 	let g:lightline = {
 	\ 'tabline': {
 	\   'left': [ [ 'mrubuffers' ] ],
-	\   'right': [ [ 'bufferclose' ] ]
+	\   'right': [ [ 'bufferclose', 'tabnum' ] ]
 	\ },
 	\ 'component_expand': {
 	\   'mrubuffers': 'bufmru#lightline#buffers',
 	\   'bufferclose': 'bufmru#lightline#close',
+	\   'tabnum': 'bufmru#lightline#tabnum',
 	\ },
 	\ 'component_type': {
 	\   'buffers':       'tabsel',
@@ -116,6 +117,7 @@ A ligneline component can be installed by adding it to the
 	\ 'component_raw': {
 	\   'mrubuffers':     1,
 	\   'bufferclose':    1,
+	\   'tabnum':         1,
 	\ },
 	\ 'enable': {
 	\   'statusline': 1,
