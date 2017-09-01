@@ -3,15 +3,15 @@ hi BufMRULightlineActive cterm=underline
 
 let s:buffers = {}
 
-function s:dirname(path)
+function! s:dirname(path)
   return fnamemodify(a:path.'a', ':h')
 endfunction
 
-function s:basename(path)
+function! s:basename(path)
   return fnamemodify(a:path.'a', ':t')
 endfunction
 
-function s:tailfile(path, num)
+function! s:tailfile(path, num)
   let num = a:num - 1
   let name = fnamemodify(a:path, ':t')
   let path = fnamemodify(a:path, ':h')
@@ -23,7 +23,7 @@ function s:tailfile(path, num)
   return name
 endfunction
 
-function bufmru#lightline#buffer_name(buf, bufs)
+function! bufmru#lightline#buffer_name(buf, bufs)
   if has_key(s:buffers, a:buf)
     return s:buffers[a:buf]['name']
   endif
@@ -62,7 +62,7 @@ endfunction
 let g:bufmru_lightline_highlight = 'LightlineLeft_tabline_0'
 let g:bufmru_lightline_highlight_active = 'LightlineLeft_tabline_tabsel_0'
 
-function bufmru#lightline#buffer_tag(buf, bufs, active)
+function! bufmru#lightline#buffer_tag(buf, bufs, active)
   let name = bufmru#lightline#buffer_name(str2nr(a:buf), a:bufs)
   let name = substitute(name, '%', '%%', 'g')
   "if a:active
@@ -75,10 +75,10 @@ function bufmru#lightline#buffer_tag(buf, bufs, active)
   "else
   "  let markup = '%#' . g:bufmru_lightline_highlight . '#' . markup
   "endif
-  return [text, markup]
+  return [a:buf.name, markup]
 endfunction
 
-function bufmru#lightline#nr2superscript(nr)
+function! bufmru#lightline#nr2superscript(nr)
   let res = ""
   let conv = {
         \ '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
@@ -90,7 +90,7 @@ function bufmru#lightline#nr2superscript(nr)
   return res
 endfunction
 
-function bufmru#lightline#firstbuffer()
+function! bufmru#lightline#firstbuffer()
   let bufs = BufMRUList()
   let buf = bufnr('%')
   if bufs[0] == buf
@@ -102,11 +102,11 @@ function bufmru#lightline#firstbuffer()
   endif
 endfunction
 
-function bufmru#lightline#close()
+function! bufmru#lightline#close()
   return '%0@bufmru#lightline#bufclose@ x %X'
 endfunction
 
-function bufmru#lightline#initvars()
+function! bufmru#lightline#initvars()
   let el = '…'
   let ellen = -1
   let seplen = 1
@@ -126,12 +126,12 @@ function bufmru#lightline#initvars()
     let seplen = g:bufmru_lightline_sep_len
   endif
   if exists('g:bufmru_lightline_reserve')
-    let reseve = g:bufmru_lightline_reserve
+    let reserve = g:bufmru_lightline_reserve
   endif
   return [ el, ellen, seplen, reserve ]
 endfunction
 
-function bufmru#lightline#buffers()
+function! bufmru#lightline#buffers()
   let res = [[], [], []]
   let lens = [[], [], []]
   let bufs = BufMRUList()
@@ -158,7 +158,8 @@ function bufmru#lightline#buffers()
   let ellen1 = ellen + seplen
   let ellen2 = 2 * ellen1
   let res2 = [[], res[1], []]
-  let maxw = winwidth(0) - reserve
+  let width = &columns
+  let maxw = width - reserve
   let curw = seplen
   for w in lens[1]
     let curw += w + seplen
@@ -197,11 +198,12 @@ function bufmru#lightline#buffers()
     let res2[2] += [ ellipsis ]
     let curw += 1 + seplen
   endif
+  let g:bufmru_lightline_ellipsis_debug = 'maxw='.maxw.' curw='.curw.' width='.width.' reserve='.reserve
 
   return res2
 endfunction
 
-function bufmru#lightline#bufgo(num, numclicks, mousebtn, modifiers)
+function! bufmru#lightline#bufgo(num, numclicks, mousebtn, modifiers)
   let active = bufnr('%')
   if a:mousebtn == 'm'
     if active == a:num
@@ -213,13 +215,13 @@ function bufmru#lightline#bufgo(num, numclicks, mousebtn, modifiers)
   end
 endfunction
 
-function bufmru#lightline#bufclose(num, numclicks, mousebtn, modifiers)
+function! bufmru#lightline#bufclose(num, numclicks, mousebtn, modifiers)
   let nr = bufnr('%')
   call bufmru#go(1)
   execute "bd" nr
 endfunction
 
-function bufmru#lightline#tabnum()
+function! bufmru#lightline#tabnum()
   if tabpagenr('$') == 1
     return '' " no tabs
   endif
@@ -227,7 +229,7 @@ function bufmru#lightline#tabnum()
   return '%0@bufmru#lightline#tabnum_click@ tab: '.nr.' %X'
 endfunction
 
-function bufmru#lightline#tabnum_click(num, numclicks, mousebtn, modifiers)
+function! bufmru#lightline#tabnum_click(num, numclicks, mousebtn, modifiers)
   if a:mousebtn == 'r'
     tabprevious
   elseif a:mousebtn == 'm'
