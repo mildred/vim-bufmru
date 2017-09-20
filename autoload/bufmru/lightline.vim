@@ -65,6 +65,7 @@ let g:bufmru_lightline_highlight_active = 'LightlineLeft_tabline_tabsel_0'
 function! bufmru#lightline#buffer_tag(buf, bufs, active)
   let name = bufmru#lightline#buffer_name(str2nr(a:buf), a:bufs)
   let name = substitute(name, '%', '%%', 'g')
+  let name .= (getbufvar(a:buf, "&mod")?'*':'')
   "if a:active
   "  let name = '['.name.']'
   "endif
